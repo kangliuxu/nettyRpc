@@ -1,4 +1,4 @@
-package server;
+package com.xkl.rpc.sample.server;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

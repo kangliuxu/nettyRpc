@@ -1,4 +1,4 @@
-package server.annontation;
+package com.xkl.rpc.server;
 
 import org.springframework.stereotype.Component;
 

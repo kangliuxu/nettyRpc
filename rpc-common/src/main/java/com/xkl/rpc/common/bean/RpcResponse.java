@@ -1,4 +1,4 @@
-package server.dto;
+package com.xkl.rpc.common.bean;
 
 /**
  * @author xkl
@@ -7,8 +7,12 @@ package server.dto;
  **/
 public class RpcResponse {
     private String requestId;
-    private Throwable error;
+    private Exception exception;
     private Object result;
+
+    public boolean hasException() {
+        return exception != null;
+    }
 
     public String getRequestId() {
         return requestId;
@@ -18,12 +22,12 @@ public class RpcResponse {
         this.requestId = requestId;
     }
 
-    public Throwable getError() {
-        return error;
+    public Throwable getException() {
+        return exception;
     }
 
-    public void setError(Throwable error) {
-        this.error = error;
+    public void setException(Exception exception) {
+        this.exception = exception;
     }
 
     public Object getResult() {
@@ -33,4 +37,5 @@ public class RpcResponse {
     public void setResult(Object result) {
         this.result = result;
     }
+
 }
