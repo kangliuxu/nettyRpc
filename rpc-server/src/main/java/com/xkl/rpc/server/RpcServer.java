@@ -1,6 +1,7 @@
 package com.xkl.rpc.server;
 
 import com.xkl.rpc.common.bean.RpcRequest;
+import com.xkl.rpc.common.bean.RpcResponse;
 import com.xkl.rpc.common.codec.RpcDecoder;
 import com.xkl.rpc.common.codec.RpcEncoder;
 import com.xkl.rpc.registry.ServiceRegistry;
@@ -65,16 +66,25 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                             final ChannelPipeline pipeline = socketChannel.pipeline();
                             pipeline.addLast(new RpcDecoder(RpcRequest.class));
-                            pipeline.addLast(new RpcEncoder(RpcRequest.class));
+                            pipeline.addLast(new RpcEncoder(RpcResponse.class));
                             pipeline.addLast(new RpcServerHandler(handlerMap));
                         }
                     })
-                    .option(ChannelOption.SO_BACKLOG,128)
+                    .option(ChannelOption.SO_BACKLOG,1024)
                     .childOption(ChannelOption.SO_KEEPALIVE,true);
+
+            // 获取 RPC 服务器的 IP 地址与端口号
             final String[] array = serviceAddress.split(":");
             String host = array[0];
             int port = Integer.parseInt(array[1]);
             final ChannelFuture channelFuture = bootstrap.bind(host, port);
+            //注册服务
+            if(serviceRegistry!=null){
+                for(String interfaceName:handlerMap.keySet()){
+                    serviceRegistry.register(interfaceName,serviceAddress);
+                    LOGGER.debug("register service: {} => {}", interfaceName, serviceAddress);
+                }
+            }
             LOGGER.debug("server started on port {}",port);
             channelFuture.channel().closeFuture().sync();
         }finally {
